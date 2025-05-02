@@ -7,7 +7,7 @@ from libml.preprocess import preprocess_text
 
 # Load data
 dataset = pd.read_csv('data/a1_RestaurantReviews_HistoricDump.tsv', delimiter='\t', quoting=3)
-corpus = clean_review(dataset) 
+corpus = preprocess_reviews(dataset) 
 
 # Feature extraction
 cv = CountVectorizer(max_features=1420)
