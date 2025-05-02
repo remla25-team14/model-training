@@ -19,12 +19,20 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
+    
+    - name: Verify files
+      run: |
+        ls -la  # List all files
+        if [ ! -f "model_training.py" ]; then
+          echo "❌ model_training.py not found!"
+          exit 1
+        fi
 
     - name: Create models directory
       run: mkdir -p models
 
     - name: Train model
-      run: python model_training.py
+      run: python model_train.py
 
     - name: Upload models as artifact
       uses: actions/upload-artifact@v4
