@@ -23,8 +23,8 @@ jobs:
     - name: Verify files
       run: |
         ls -la  # List all files
-        if [ ! -f "model_training.py" ]; then
-          echo "❌ model_training.py not found!"
+        if [ ! -f "model_train.py" ]; then
+          echo "❌ model_train.py not found!"
           exit 1
         fi
 
