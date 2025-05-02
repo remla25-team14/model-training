@@ -1,5 +1,8 @@
-libml @ git+https://github.com/remla25-team14/lib-ml@0.1.2
-numpy>=1.26.0,<2.1.0  # Matches TensorFlow's requirement
-pandas==2.2.3          # Latest stable (works with Python 3.12 and NumPy 1.26+)
-scikit-learn==1.5.2    # Compatible with TensorFlow 2.18
+libml @ git+https://github.com/remla25-team14/lib-ml@0.1.6
+numpy>=1.26.0,<2.1.0
+pandas==2.2.3 
+scikit-learn==1.5.2    
 tensorflow==2.18.0
+setuptools==80.1.0
+setuptools-scm==8.0.4
+wheel==0.45.1
