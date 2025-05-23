@@ -2,10 +2,9 @@ name: Train and Save Model
 
 on:
   push:
-  workflow_dispatch:
-  push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   train-model:
