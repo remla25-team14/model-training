@@ -7,12 +7,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source code and data
 COPY model_training/ /app/model_training/
 COPY pyproject.toml .
+COPY data/ /app/data/
 
-# Create directories and train model (data will be downloaded automatically)
-RUN mkdir -p data/raw data/processed models && \
+# Create directories and train model
+RUN mkdir -p models && \
     python -m model_training.modeling.train
 
 # Runtime stage - minimal image with just the trained models
