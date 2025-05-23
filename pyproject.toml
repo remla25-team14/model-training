@@ -21,6 +21,7 @@ dependencies = [
     "tqdm>=4.62.0",
     "typer>=0.4.0",
     "loguru>=0.6.0",
+    "libml @ file:///Users/ilmajaganjac/Documents/uni/remla25-team14/lib-ml",
 ]
 
 [project.optional-dependencies]

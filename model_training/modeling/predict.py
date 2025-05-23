@@ -14,7 +14,7 @@ from model_training.config import (
     CLASSIFIER_MODEL_FILE,
     PROCESSED_DATA_DIR
 )
-from model_training.features import preprocess_reviews
+from libml.data_preprocessing import preprocess_reviews
 
 app = typer.Typer()
 

@@ -15,7 +15,8 @@ from model_training.config import (
     CLASSIFIER_MODEL_FILE
 )
 from model_training.dataset import load_historic_dataset, download_dataset
-from model_training.features import preprocess_reviews, extract_features
+from model_training.features import extract_features
+from libml.data_preprocessing import preprocess_reviews
 
 def train_model(X_train, y_train, model_path=None):
     """

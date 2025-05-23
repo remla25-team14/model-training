@@ -3,55 +3,17 @@ from pathlib import Path
 from loguru import logger
 from tqdm import tqdm
 import typer
-import re
-import nltk
 import joblib
 import numpy as np
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
+
+# Import preprocessing from lib-ml
+from libml.data_preprocessing import preprocess_reviews
 
 from model_training.config import PROCESSED_DATA_DIR
 
 app = typer.Typer()
-
-# Download NLTK data
-nltk.download('stopwords', quiet=True)
-
-def preprocess_reviews(dataset):
-    """
-    Preprocess the text reviews by:
-    - Removing non-alphabetic characters
-    - Converting to lowercase
-    - Removing stopwords
-    - Stemming
-    
-    Args:
-        dataset (pd.DataFrame): Dataset containing reviews
-        
-    Returns:
-        list: Preprocessed corpus
-    """
-    # Initialize stemmer
-    ps = PorterStemmer()
-    
-    # Get stopwords but keep "not" as it's important for sentiment
-    all_stopwords = stopwords.words('english')
-    all_stopwords.remove('not')
-    
-    corpus = []
-    
-    # Preprocess each review
-    for i in range(len(dataset)):
-        review = re.sub('[^a-zA-Z]', ' ', dataset['Review'][i])
-        review = review.lower()
-        review = review.split()
-        review = [ps.stem(word) for word in review if not word in set(all_stopwords)]
-        review = ' '.join(review)
-        corpus.append(review)
-    
-    return corpus
 
 def extract_features(corpus, max_features=1420, vectorizer_path=None):
     """
