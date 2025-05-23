@@ -19,12 +19,13 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-    
-    - name: Verify files
+        pip install python-dotenv
+
+    - name: Verify directories
       run: |
         ls -la  # List all files
-        if [ ! -f "model_train.py" ]; then
-          echo "❌ model_train.py not found!"
+        if [ ! -d "model_training" ]; then
+          echo "❌ model_training directory not found!"
           exit 1
         fi
 
@@ -32,7 +33,17 @@ jobs:
       run: mkdir -p models
 
     - name: Train model
-      run: python model_train.py
+      run: python -m model_training.modeling.train
+
+    - name: Rename model files for compatibility
+      run: |
+        if [ -f "models/bow_vectorizer.pkl" ]; then
+          cp models/bow_vectorizer.pkl models/c1_BoW_v1.pkl
+        fi
+        if [ -f "models/sentiment_classifier.pkl" ]; then
+          cp models/sentiment_classifier.pkl models/c2_Classifier_v1.pkl
+        fi
+        ls -la models/  # List files for verification
 
     - name: Upload models as artifact
       uses: actions/upload-artifact@v4
