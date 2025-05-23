@@ -1,29 +1,23 @@
-# Builder stage
-FROM python:3.11-slim as builder
-
-WORKDIR /app
-
-COPY requirements.txt .
-
-# Install dependencies without caching
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-# Final stage
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Make sure scripts are in PATH
-ENV PATH=/root/.local/bin:$PATH
+# Copy the model training code
+COPY model_training/ /app/model_training/
+COPY pyproject.toml .
 
-# Copy necessary files
-COPY . .
+# Copy the data files
+COPY data/ /app/data/
 
-# Create models directory
-RUN mkdir -p models && chmod 777 models
+# Create necessary directories
+RUN mkdir -p models
 
-# Run the model training
-CMD ["python", "model_train.py"] 
+# Set environment variables
+ENV PYTHONPATH=/app
+
+# Run the training script
+CMD ["python", "-m", "model_training.modeling.train"] 
