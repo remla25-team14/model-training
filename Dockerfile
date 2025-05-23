@@ -1,23 +1,29 @@
-FROM python:3.11-slim
+# Build stage - install build dependencies and train model
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Install build dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the model training code
 COPY model_training/ /app/model_training/
 COPY pyproject.toml .
-
-# Copy the data files
 COPY data/ /app/data/
 
-# Create necessary directories
-RUN mkdir -p models
+RUN mkdir -p models && \
+    python -m model_training.modeling.train
 
-# Set environment variables
+FROM python:3.11-slim AS runtime
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir joblib scikit-learn
+
+COPY --from=builder /app/models/ /app/models/
+
+COPY --from=builder /app/model_training/ /app/model_training/
+
 ENV PYTHONPATH=/app
 
-# Run the training script
-CMD ["python", "-m", "model_training.modeling.train"] 
+CMD ["ls", "-la", "models/"] 

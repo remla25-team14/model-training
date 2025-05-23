@@ -59,45 +59,9 @@ def main(
 
 
 def download_dataset(target_dir=None):
-    """
-    Download the restaurant reviews dataset if it doesn't exist
-    
-    Args:
-        target_dir (Path, optional): Directory where the dataset will be stored
-    """
-    # Use default path if not provided
-    if target_dir is None:
-        target_dir = RAW_DATA_DIR
-    
-    # Create directory if it doesn't exist
-    target_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Define file paths
-    historic_file = target_dir / "a1_RestaurantReviews_HistoricDump.tsv"
-    fresh_file = target_dir / "a2_RestaurantReviews_FreshDump.tsv"
-    
-    # Check if files already exist
-    if historic_file.exists() and fresh_file.exists():
-        logger.info("Dataset files already exist.")
-        return
-    
-    try:
-        # First approach: local project structure (development)
-        project_root = Path(__file__).resolve().parents[2]
-        historic_source = project_root / "data/raw/a1_RestaurantReviews_HistoricDump.tsv"
-        fresh_source = project_root / "data/raw/a2_RestaurantReviews_FreshDump.tsv"
-        
-        if historic_source.exists() and fresh_source.exists():
-            historic_file.write_text(historic_source.read_text())
-            fresh_file.write_text(fresh_source.read_text())
-            logger.info(f"Copied data from local project")
-            return
-    except Exception as e:
-        logger.warning(f"Could not copy from local project: {e}")
-    
-    # If we get here, files weren't found or couldn't be copied
-    logger.error("Could not find or copy dataset files")
-    raise FileNotFoundError("Dataset files not found")
+    """Simple fallback - DVC should handle this"""
+    logger.info("Data should be managed by DVC. Run 'dvc repro' to get data.")
+    raise FileNotFoundError("Run 'dvc pull' or 'dvc repro' to download data")
 
 def load_historic_dataset(file_path=None):
     """
