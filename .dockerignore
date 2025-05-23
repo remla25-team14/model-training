@@ -1,5 +1,4 @@
-# Exclude data files (they should be downloaded automatically)
-# Temporarily commented out for Docker build testing
+# Exclude data files (temporarily commented out for Docker build)
 # data/
 models/
 model_service_artifacts/
