@@ -3,7 +3,6 @@ name: Train and Save Model
 on:
   push:
   workflow_dispatch:
-  # Trigger on version tags for releases
   push:
     tags:
       - 'v*'
@@ -29,7 +28,7 @@ jobs:
       run: |
         ls -la  # List all files
         if [ ! -d "model_training" ]; then
-          echo "❌ model_training directory not found!"
+          echo "model_training directory not found!"
           exit 1
         fi
 
