@@ -10,4 +10,3 @@ pytest>=7.0.0
 black>=22.0.0
 python-dotenv>=1.0.0
 requests>=2.28.0
-libml @ file:///Users/ilmajaganjac/Documents/uni/remla25-team14/lib-ml

@@ -2,8 +2,6 @@ name: Train and Save Model
 
 on:
   push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -21,13 +19,12 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install python-dotenv
-
-    - name: Verify directories
+    
+    - name: Verify files
       run: |
         ls -la  # List all files
-        if [ ! -d "model_training" ]; then
-          echo "model_training directory not found!"
+        if [ ! -f "model_train.py" ]; then
+          echo "❌ model_train.py not found!"
           exit 1
         fi
 
@@ -35,95 +32,11 @@ jobs:
       run: mkdir -p models
 
     - name: Train model
-      run: python -m model_training.modeling.train
+      run: python model_train.py
 
-    - name: Rename model files for compatibility
-      run: |
-        if [ -f "models/bow_vectorizer.pkl" ]; then
-          cp models/bow_vectorizer.pkl models/c1_BoW_v1.pkl
-        fi
-        if [ -f "models/sentiment_classifier.pkl" ]; then
-          cp models/sentiment_classifier.pkl models/c2_Classifier_v1.pkl
-        fi
-        ls -la models/  # List files for verification
-
-    # Create a zip package of model artifacts
-    - name: Package model artifacts
-      run: |
-        cd models
-        zip -r ../model-artifacts-${{ github.ref_name }}.zip *.pkl
-        cd ..
-        ls -la *.zip
-
-    # Upload as workflow artifact (for regular pushes)
     - name: Upload models as artifact
-      if: github.ref_type != 'tag'
       uses: actions/upload-artifact@v4
       with:
         name: ml-models
         path: models/
         retention-days: 7
-
-    # Create GitHub Release with model artifacts (for version tags)
-    - name: Create Release
-      if: github.ref_type == 'tag'
-      uses: actions/create-release@v1
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Model Release ${{ github.ref_name }}
-        body: |
-          🤖 **Automated Model Release**
-          
-          This release contains trained sentiment analysis models:
-          - `c1_BoW_v1.pkl` - Bag of Words vectorizer
-          - `c2_Classifier_v1.pkl` - Naive Bayes classifier
-          
-          **Training Info:**
-          - Commit: ${{ github.sha }}
-          - Trained on: ${{ github.run_id }}
-          
-          **Usage:**
-          Download the model artifacts and use with the model-service.
-        draft: false
-        prerelease: false
-
-    # Upload model package to release
-    - name: Upload Release Asset
-      if: github.ref_type == 'tag'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./model-artifacts-${{ github.ref_name }}.zip
-        asset_name: model-artifacts-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
-
-    # Auto-bump version to pre-release after stable release
-    - name: Bump version to pre-release
-      if: github.ref_type == 'tag' && !contains(github.ref_name, 'pre')
-      run: |
-        # Extract version numbers (e.g., v1.2.3 -> 1.2.3)
-        VERSION=${GITHUB_REF_NAME#v}
-        
-        # Increment patch version (1.2.3 -> 1.2.4)
-        IFS='.' read -ra PARTS <<< "$VERSION"
-        MAJOR=${PARTS[0]}
-        MINOR=${PARTS[1]}
-        PATCH=$((${PARTS[2]} + 1))
-        
-        # Create new pre-release version
-        NEW_VERSION="v$MAJOR.$MINOR.$PATCH-pre"
-        
-        # Update version in pyproject.toml
-        sed -i "s/version = \".*\"/version = \"$MAJOR.$MINOR.$PATCH-pre\"/" pyproject.toml
-        
-        # Commit and push the version bump
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add pyproject.toml
-        git commit -m "Bump version to $NEW_VERSION after release" || exit 0
-        git push origin main

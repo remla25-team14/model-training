@@ -7,8 +7,6 @@ import joblib
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
-
-# Import preprocessing from lib-ml
 from libml.data_preprocessing import preprocess_reviews
 
 from model_training.config import PROCESSED_DATA_DIR
