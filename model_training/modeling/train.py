@@ -67,8 +67,18 @@ def run_training_pipeline():
     """
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     
-    logger.info("Checking dataset...")
-    download_dataset()
+    # Check if dataset exists before trying to download
+    historic_file = RAW_DATA_DIR / "a1_RestaurantReviews_HistoricDump.tsv"
+    
+    if not historic_file.exists():
+        logger.info("Dataset not found, attempting to download...")
+        try:
+            download_dataset()
+        except Exception as e:
+            logger.error(f"Failed to download dataset: {e}")
+            logger.info("Trying to proceed with existing data...")
+    else:
+        logger.info("Dataset already exists, skipping download.")
     
     logger.info("Loading dataset...")
     dataset = load_historic_dataset()

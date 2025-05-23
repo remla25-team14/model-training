@@ -1,0 +1,32 @@
+# Exclude data files (they should be downloaded automatically)
+# Temporarily commented out for Docker build testing
+# data/
+models/
+model_service_artifacts/
+
+# Git files
+.git/
+.github/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Development files
+.vscode/
+.idea/
+*.log
+.env
+
+# Documentation
+docs/
+notebooks/
+reports/
+references/
+
+# Test files
+tests/ 
