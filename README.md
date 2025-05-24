@@ -20,7 +20,7 @@ make setup
 ```
 
 ### 2. DVC Setup
-The DVC remote storage is already configured in the repository. The configuration points to DagsHub S3 storage and includes all necessary credentials. To get the data:
+No manual DVC configuration is needed! The repository comes with pre-configured DVC settings that are version controlled. Simply run:
 
 ```bash
 # Pull all data and model files
@@ -32,6 +32,8 @@ This will download:
 - Processed features in `data/processed/`
 - Trained model in `models/`
 - Model artifacts in `model_service_artifacts/`
+
+The DVC remote storage (DagsHub) and all necessary credentials are already configured in the repository and will be available automatically after cloning.
 
 ### Repository Structure
 ```
