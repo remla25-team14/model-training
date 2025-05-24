@@ -10,3 +10,6 @@ pytest>=7.0.0
 black>=22.0.0
 python-dotenv>=1.0.0
 requests>=2.28.0
+dvc>=3.0.0
+dvc[webdav]
+dagshub

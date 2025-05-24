@@ -47,13 +47,13 @@ def download_dataset():
     
     # Download training data
     training_data = params["training_data"]
-    training_dest = raw_data_dir / training_data["dataset_name"]
+    training_dest = raw_data_dir / "a1_RestaurantReviews_HistoricDump.tsv"
     logger.info(f"Downloading training dataset to {training_dest}")
     download_file(training_data["url"], str(training_dest))
     
     # Download test data
     test_data = params["test_data"]
-    test_dest = raw_data_dir / test_data["dataset_name"]
+    test_dest = raw_data_dir / "a2_RestaurantReviews_FreshDump.tsv"
     logger.info(f"Downloading test dataset to {test_dest}")
     download_file(test_data["url"], str(test_dest))
 
@@ -68,7 +68,7 @@ def load_historic_dataset(file_path=None):
         pd.DataFrame: The loaded dataset
     """
     if file_path is None:
-        file_path = RAW_DATA_DIR / "restaurant_reviews_train.tsv"
+        file_path = RAW_DATA_DIR / "a1_RestaurantReviews_HistoricDump.tsv"
     
     if not file_path.exists():
         logger.warning(f"Dataset not found at {file_path}")
@@ -91,7 +91,7 @@ def load_fresh_dataset(file_path=None):
         pd.DataFrame: The loaded dataset
     """
     if file_path is None:
-        file_path = RAW_DATA_DIR / "restaurant_reviews_test.tsv"
+        file_path = RAW_DATA_DIR / "a2_RestaurantReviews_FreshDump.tsv"
     
     if not file_path.exists():
         logger.warning(f"Dataset not found at {file_path}")

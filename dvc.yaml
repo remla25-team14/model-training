@@ -6,13 +6,15 @@ stages:
     params:
       - data.download
     outs:
-      - data/raw
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      - data/raw/a2_RestaurantReviews_FreshDump.tsv
 
   prepare:
     cmd: python -m model_training.features
     deps:
       - model_training/features.py
-      - data/raw
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      - data/raw/a2_RestaurantReviews_FreshDump.tsv
     params:
       - data
     outs:
@@ -20,9 +22,9 @@ stages:
       - data/processed/bow_vectorizer.pkl
       
   train:
-    cmd: python -m model_training.models.train_model
+    cmd: python -m model_training.modeling.train
     deps:
-      - model_training/models/train_model.py
+      - model_training/modeling/train.py
       - data/processed/features.csv
       - data/processed/bow_vectorizer.pkl
     params:
@@ -34,11 +36,13 @@ stages:
           cache: false
       
   evaluate:
-    cmd: python -m model_training.models.evaluate_model
+    cmd: python -m model_training.modeling.evaluate_model
     deps:
-      - model_training/models/evaluate_model.py
+      - model_training/modeling/evaluate_model.py
       - models/model.joblib
       - data/processed/features.csv
+    params:
+      - evaluation
     metrics:
       - reports/evaluation.json:
           cache: false

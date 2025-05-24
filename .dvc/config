@@ -1,4 +1,6 @@
 [core]
-    remote = pcloud
+    remote = origin
 ['remote "pcloud"']
-    url = webdav://webdav.pcloud.com/
+    url = https://webdav.pcloud.com/dvc-store
+['remote "origin"']
+    url = https://dagshub.com/s.hakimi/assignment4_dvc_cloud.dvc

@@ -1,0 +1,139 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: python -m model_training.dataset
+    deps:
+    - path: model_training/dataset.py
+      hash: md5
+      md5: 4b1b1fdc22ae263b931ea8afe792c391
+      size: 3626
+    params:
+      params.yaml:
+        data.download:
+          training_data:
+            url: 
+              https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a1_RestaurantReviews_HistoricDump.tsv
+          test_data:
+            url: 
+              https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a2_RestaurantReviews_FreshDump.tsv
+    outs:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 102f1f4193e0bdebdd6cce7f13e0a839
+      size: 54686
+    - path: data/raw/a2_RestaurantReviews_FreshDump.tsv
+      hash: md5
+      md5: 097c8b95f6b255e5a6a06b29d61fef8e
+      size: 6504
+  prepare:
+    cmd: python -m model_training.features
+    deps:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 102f1f4193e0bdebdd6cce7f13e0a839
+      size: 54686
+    - path: data/raw/a2_RestaurantReviews_FreshDump.tsv
+      hash: md5
+      md5: 097c8b95f6b255e5a6a06b29d61fef8e
+      size: 6504
+    - path: model_training/features.py
+      hash: md5
+      md5: 23d41109e058ae3b47a8a6d280cb4ffa
+      size: 2448
+    params:
+      params.yaml:
+        data:
+          download:
+            training_data:
+              url: 
+                https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a1_RestaurantReviews_HistoricDump.tsv
+            test_data:
+              url: 
+                https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a2_RestaurantReviews_FreshDump.tsv
+          raw_data_path: data/raw
+          processed_data_path: data/processed
+    outs:
+    - path: data/processed/bow_vectorizer.pkl
+      hash: md5
+      md5: 571c8e2c8df0e90bc9a42617c703fe69
+      size: 39448
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 34c08e2c530411c728c5eb0038e18ab3
+      size: 2563796
+  train:
+    cmd: python -m model_training.modeling.train
+    deps:
+    - path: data/processed/bow_vectorizer.pkl
+      hash: md5
+      md5: 571c8e2c8df0e90bc9a42617c703fe69
+      size: 39448
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 34c08e2c530411c728c5eb0038e18ab3
+      size: 2563796
+    - path: model_training/modeling/train.py
+      hash: md5
+      md5: 90048d13c78eecee59c1f6e25bf1afed
+      size: 3743
+    params:
+      params.yaml:
+        training:
+          test_size: 0.2
+          random_state: 42
+          model_params:
+            max_iter: 1000
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 03138659cb8fe377321cfe7e363f7cc1
+      size: 46215
+    - path: reports/metrics.json
+      hash: md5
+      md5: 679018188f0de780a11566a97c29bdfb
+      size: 128
+  evaluate:
+    cmd: python -m model_training.modeling.evaluate_model
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 34c08e2c530411c728c5eb0038e18ab3
+      size: 2563796
+    - path: model_training/modeling/evaluate_model.py
+      hash: md5
+      md5: 2ce5bc14893cf8c34632cbff70dfdeda
+      size: 2326
+    - path: models/model.joblib
+      hash: md5
+      md5: 03138659cb8fe377321cfe7e363f7cc1
+      size: 46215
+    params:
+      params.yaml:
+        evaluation:
+          metrics:
+          - accuracy
+          - precision
+          - recall
+          - f1
+    outs:
+    - path: reports/evaluation.json
+      hash: md5
+      md5: 2e7b26750f82323a0c34a53e75bac752
+      size: 139
+  prepare_service:
+    cmd: python prepare_for_model_service.py
+    deps:
+    - path: models/model.joblib
+      hash: md5
+      md5: 03138659cb8fe377321cfe7e363f7cc1
+      size: 46215
+    - path: prepare_for_model_service.py
+      hash: md5
+      md5: 8dceb817b8f9bad778a1961bb61bcb19
+      size: 1707
+    outs:
+    - path: model_service_artifacts
+      hash: md5
+      md5: 005ddbb9951d44419397770a4feca33e.dir
+      size: 85663
+      nfiles: 2
