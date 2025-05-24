@@ -1,17 +1,30 @@
 stages:
-  prepare:
-    cmd: python -m model_training.data.make_dataset
+  download:
+    cmd: python -m model_training.data.download_dataset
     deps:
-      - model_training/data/make_dataset.py
-      - data/raw
+      - model_training/data/download_dataset.py
+    params:
+      - data.download
     outs:
-      - data/processed
+      - data/raw
+
+  prepare:
+    cmd: python -m model_training.features
+    deps:
+      - model_training/features.py
+      - data/raw
+    params:
+      - data
+    outs:
+      - data/processed/features.csv
+      - data/processed/bow_vectorizer.pkl
       
   train:
     cmd: python -m model_training.models.train_model
     deps:
       - model_training/models/train_model.py
-      - data/processed
+      - data/processed/features.csv
+      - data/processed/bow_vectorizer.pkl
     params:
       - training
     outs:
@@ -25,7 +38,7 @@ stages:
     deps:
       - model_training/models/evaluate_model.py
       - models/model.joblib
-      - data/processed
+      - data/processed/features.csv
     metrics:
       - reports/evaluation.json:
           cache: false
