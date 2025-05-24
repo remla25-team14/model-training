@@ -8,8 +8,23 @@ This repository contains the machine learning model training pipeline for sentim
 - Python 3.11 or higher
 - Git
 - Make
+- Conda (for environment management)
 
-### 1. Clone and Setup Repository
+### 1. Environment Setup
+First, create and activate a conda environment:
+
+```bash
+# Create conda environment
+conda create -n model-training-2 python=3.11
+
+# Activate the environment
+conda activate model-training-2
+
+# Install pip in the conda environment
+conda install pip
+```
+
+### 2. Clone and Setup Repository
 ```bash
 # Clone the repository
 git clone https://github.com/remla25-team14/model-training.git
@@ -19,7 +34,7 @@ cd model-training
 make setup
 ```
 
-### 2. DVC Setup
+### 3. DVC Setup
 No manual DVC configuration is needed! The repository comes with pre-configured DVC settings that are version controlled. Simply run:
 
 ```bash
@@ -68,4 +83,4 @@ To contribute to this repository:
    ```bash
    git push
    dvc push
-   ``` 
+   ```
