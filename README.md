@@ -67,6 +67,23 @@ model-training/
 - Git is used only for code version control
 - DVC configuration is version controlled and will be automatically available after cloning
 
+### Pipeline Reproduction
+The model training process is defined as a DVC pipeline in `dvc.yaml`. To reproduce the entire pipeline:
+
+```bash
+# Reproduce the pipeline
+dvc repro
+```
+
+This command will:
+1. Check if any pipeline stages need to be rerun based on changes to their dependencies
+2. Process the raw restaurant reviews data
+3. Generate features using the Bag of Words vectorizer
+4. Train the sentiment analysis model
+5. Save the model and artifacts
+
+If no files have changed, `dvc repro` will indicate that the pipeline is up to date. If any input files or code have changed, only the affected stages will be rerun.
+
 ### Notes
 - The repository uses a Makefile for standardized setup and operations
 - DVC credentials are pre-configured and committed in the repository
