@@ -1,8 +1,8 @@
 stages:
   download:
-    cmd: python -m model_training.data.download_dataset
+    cmd: python -m model_training.dataset
     deps:
-      - model_training/data/download_dataset.py
+      - model_training/dataset.py
     params:
       - data.download
     outs:
