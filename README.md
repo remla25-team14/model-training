@@ -58,7 +58,7 @@ model-training/
 │   └── processed/        # Processed features and vectorizer
 ├── models/               # Trained model files
 ├── model_service_artifacts/ # Model service deployment artifacts
-└── src/                 # Source code for model training
+└── model_training/                 # Source code for model training
 ```
 
 ### Data Version Control
