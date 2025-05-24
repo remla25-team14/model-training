@@ -1,0 +1,4 @@
+[core]
+    remote = pcloud
+['remote "pcloud"']
+    url = webdav://webdav.pcloud.com/
