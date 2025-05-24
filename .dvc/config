@@ -1,6 +1,8 @@
 [core]
-    remote = origin
-['remote "pcloud"']
-    url = https://webdav.pcloud.com/dvc-store
-['remote "origin"']
-    url = https://dagshub.com/s.hakimi/assignment4_dvc_cloud.dvc
+    remote = storage
+['remote "storage"']
+    url = s3://dvc_cloud_setup
+    endpointurl = https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
+    access_key_id = 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+    secret_access_key = 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+    region = us-east-1
