@@ -35,13 +35,13 @@ make setup
 ```
 
 ### 3. DVC Setup
-No manual DVC configuration is needed! The repository comes with pre-configured DVC settings that are version controlled. However, you will need to configure the storage credentials:
+No manual DVC configuration is needed! The repository comes with pre-configured DVC settings that are version controlled. Run these commands to set up the storage access:
 
 ```bash
 # Configure DVC with DagsHub S3 storage credentials
 dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
-dvc remote modify storage access_key_id YOUR_ACCESS_KEY
-dvc remote modify storage secret_access_key YOUR_SECRET_KEY
+dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
 dvc remote modify storage region us-east-1
 
 # After configuring, you can pull the data
