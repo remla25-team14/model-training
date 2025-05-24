@@ -9,7 +9,6 @@ This repository contains the machine learning model training pipeline for sentim
 - Git
 - Make
 - Conda (for environment management)
-- DagsHub account (create one at https://dagshub.com if you don't have it)
 
 ### 1. Environment Setup
 First, create and activate a conda environment:
@@ -26,7 +25,12 @@ conda install pip
 ```
 
 ### 2. Clone and Setup Repository
+Note: This repository should be cloned into the `remla/` directory alongside other team repositories like `lib-ml`:
+
 ```bash
+# Navigate to the remla directory (create it if it doesn't exist)
+mkdir -p ~/remla && cd ~/remla
+
 # Clone the repository
 git clone https://github.com/remla25-team14/model-training.git
 cd model-training
@@ -36,23 +40,18 @@ make setup
 ```
 
 ### 3. DVC and DagsHub Setup
-The repository comes with pre-configured DVC settings. Follow these steps to set up DagsHub and DVC:
+The repository comes with pre-configured DVC settings that point to our team's DagsHub storage. No account creation or login is needed - the credentials are already set up in the repository.
 
-1. First, log in to DagsHub (you'll need to create an account if you don't have one):
-```bash
-# This will open a browser window for authentication
-dagshub login
-```
+To get started with the data:
 
-2. Configure DVC with DagsHub storage credentials:
 ```bash
-# Configure DVC with DagsHub S3 storage credentials
+# Configure DVC with our team's DagsHub storage credentials
 dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
 dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
 dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
 dvc remote modify storage region us-east-1
 
-# After configuring, you can pull the data
+# Pull all data and model files
 dvc pull
 ```
 
@@ -62,7 +61,7 @@ This will download:
 - Trained model in `models/`
 - Model artifacts in `model_service_artifacts/`
 
-The DVC remote storage (DagsHub) and all necessary credentials are already configured in the repository and will be available automatically after cloning.
+Note: These credentials are read-only and specifically configured for this project. For contributing your own data or models, please contact the team for write access.
 
 ### Repository Structure
 ```
