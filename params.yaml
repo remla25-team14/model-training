@@ -1,0 +1,17 @@
+training:
+  test_size: 0.2
+  random_state: 42
+  model_params:
+    # Add your model-specific parameters here
+    max_iter: 1000
+    
+data:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1 
