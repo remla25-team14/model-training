@@ -9,6 +9,7 @@ This repository contains the machine learning model training pipeline for sentim
 - Git
 - Make
 - Conda (for environment management)
+- DagsHub account (create one at https://dagshub.com if you don't have it)
 
 ### 1. Environment Setup
 First, create and activate a conda environment:
@@ -34,9 +35,16 @@ cd model-training
 make setup
 ```
 
-### 3. DVC Setup
-No manual DVC configuration is needed! The repository comes with pre-configured DVC settings that are version controlled. Run these commands to set up the storage access:
+### 3. DVC and DagsHub Setup
+The repository comes with pre-configured DVC settings. Follow these steps to set up DagsHub and DVC:
 
+1. First, log in to DagsHub (you'll need to create an account if you don't have one):
+```bash
+# This will open a browser window for authentication
+dagshub login
+```
+
+2. Configure DVC with DagsHub storage credentials:
 ```bash
 # Configure DVC with DagsHub S3 storage credentials
 dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
