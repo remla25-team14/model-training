@@ -12,28 +12,33 @@ def prepare_models_for_service():
     """
     Copy and rename the model files to match what model-service expects.
     """
+    # Source paths from our pipeline
     models_dir = Path("models")
-    bow_src = models_dir / "bow_vectorizer.pkl"
-    clf_src = models_dir / "sentiment_classifier.pkl"
+    processed_dir = Path("data/processed")
+    
+    bow_src = processed_dir / "bow_vectorizer.pkl"
+    clf_src = models_dir / "model.joblib"
     
     if not bow_src.exists() or not clf_src.exists():
         logger.error("Model files not found. Please train the model first.")
-        logger.info("Run: python -m model_training.modeling.train")
+        logger.info("Run: dvc repro train")
         return False
     
     # Create a directory for model-service files
     output_dir = Path("model_service_artifacts")
     output_dir.mkdir(exist_ok=True)
     
+    # Destination paths expected by model-service
     bow_dst = output_dir / "c1_BoW_v1.pkl"
     clf_dst = output_dir / "c2_Classifier_v1.pkl"
     
+    # Copy and rename files
     shutil.copy2(bow_src, bow_dst)
     shutil.copy2(clf_src, clf_dst)
     
     logger.success(f"Model files prepared for model-service in {output_dir}")
-    logger.info(f"Original vectorizer: {bow_src} → {bow_dst}")
-    logger.info(f"Original classifier: {clf_src} → {clf_dst}")
+    logger.info(f"Vectorizer: {bow_src} → {bow_dst}")
+    logger.info(f"Classifier: {clf_src} → {clf_dst}")
     return True
 
 if __name__ == "__main__":
