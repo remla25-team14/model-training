@@ -84,6 +84,42 @@ This command will:
 
 If no files have changed, `dvc repro` will indicate that the pipeline is up to date. If any input files or code have changed, only the affected stages will be rerun.
 
+### Experiment Management
+DVC provides powerful experiment tracking capabilities. Here's how to use them:
+
+```bash
+# View all experiments and their metrics
+dvc exp show
+
+# This will display a table showing:
+# - Experiment names and creation times
+# - Metrics for each experiment (accuracy, precision, recall, F1)
+# - Parameter values used
+# - File hashes for tracking changes
+```
+
+To run new experiments with different parameters:
+
+```bash
+# Modify parameters in params.yaml, then run:
+dvc exp run
+
+# Or run with parameter modifications directly:
+dvc exp run --set-param training.random_state=123
+dvc exp run --set-param training.test_size=0.3
+```
+
+The experiments are tracked and can be:
+- Compared using `dvc exp show`
+- Applied using `dvc exp apply <experiment-name>`
+- Shared with others using `dvc exp push` and `dvc exp pull`
+
+This helps in:
+- Tracking different model configurations
+- Comparing performance metrics
+- Reproducing successful experiments
+- Collaborating on model improvements
+
 ### Notes
 - The repository uses a Makefile for standardized setup and operations
 - DVC credentials are pre-configured and committed in the repository
