@@ -11,5 +11,6 @@ black>=22.0.0
 python-dotenv>=1.0.0
 requests>=2.28.0
 dvc>=3.0.0
-dvc[webdav]
+dvc-s3>=3.0.0
 dagshub>=0.5.10
+
