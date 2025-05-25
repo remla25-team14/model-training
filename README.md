@@ -45,14 +45,11 @@ The repository comes with pre-configured DVC settings that point to our team's D
 To get started with the data:
 
 ```bash
-# Configure DVC with our team's DagsHub storage credentials
-dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
-dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
-dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
-dvc remote modify storage region us-east-1
+# If you have any existing DVC config, remove it first to avoid conflicts
+rm -f .dvc/config*
 
-# Pull all data and model files
-dvc pull
+# Configure DVC with our team's DagsHub storage credentials (all in one command)
+dvc remote add -d storage s3://dvc_cloud_setup && dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi && dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3 && dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3 && dvc remote modify storage region us-east-1 && dvc pull
 ```
 
 This will download:
