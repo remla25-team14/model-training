@@ -1,4 +1,3 @@
-# tests/test_model_dev.py
 import random, numpy as np, pytest
 from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import MultinomialNB
@@ -25,7 +24,6 @@ def split_data():
     return X_tr, X_te, y_tr, y_te, df_te
 
 
-# ① against stronger baseline
 @pytest.mark.model_dev
 def test_against_baseline(split_data):
     X_tr, X_te, y_tr, y_te, _ = split_data
@@ -41,7 +39,6 @@ def test_against_baseline(split_data):
     )
 
 
-# ② important slice quality
 @pytest.mark.model_dev
 def test_slices(split_data):
     X_tr, X_te, y_tr, y_te, df_te = split_data
@@ -59,7 +56,6 @@ def test_slices(split_data):
     )
 
 
-# ③ non-determinism robustness
 @pytest.mark.model_dev
 # GaussNB has no nondeterminism!!! So this test will always pass no matter how small the difference set.
 # If this is not desired, consider changing a model or introducing some randomness during training.
