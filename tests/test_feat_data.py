@@ -42,12 +42,12 @@ def test_feat_latency():
 @pytest.mark.feature_data
 def test_memory():
     tracemalloc.start()
-    load_and_gen_feats()                   # historic 样本集
+    load_and_gen_feats()
     _, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
-    assert peak < 200 * 1024 ** 2, (
-        f"Peak memory {peak/1e6:.1f} MB ≥ 200 MB"
+    assert peak < 20 * 1024 ** 2, (
+        f"Peak memory {peak/1e6:.1f} MB ≥ 20 MB"
     )
 
 
@@ -58,8 +58,8 @@ def test_largest_feat_memory():
     hottest_col = col_nnz.argmax()
     vec_sparse = X[:, hottest_col]
     dense_bytes = vec_sparse.toarray().nbytes
-    assert dense_bytes < 10 * 1024 ** 2, \
-        f"Single feature dense size {dense_bytes/1e6:.2f} MB > 10 MB"
+    assert dense_bytes < 1 * 1024 ** 2, \
+        f"Single feature dense size {dense_bytes/1e6:.2f} MB > 1 MB"
 
 
 @pytest.mark.feature_data

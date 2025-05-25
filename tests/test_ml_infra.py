@@ -11,19 +11,19 @@ TMP_DIR = Path(tempfile.gettempdir()) / "mltest_artifacts"
 
 
 @pytest.mark.ml_infra
-def test_step1_read_raw():
+def test_step1_read():
     df = load_historic_dataset()
     assert not df.empty and {"Review", "Liked"} <= set(df.columns)
 
 
 @pytest.mark.ml_infra
-def test_step2_preprocess_to_features():
+def test_step2_preprocess():
     X_sparse, y = load_and_gen_feats()
     assert X_sparse.shape[0] == len(y) and X_sparse.nnz > 0
 
 
 @pytest.mark.ml_infra
-def test_step3_train_and_dump():
+def test_step3_train():
     X, y = load_and_gen_feats(as_dense=True)
     model = train_model(X, y)
 
@@ -35,7 +35,7 @@ def test_step3_train_and_dump():
 
 
 @pytest.mark.ml_infra
-def test_step4_load_and_predict():
+def test_step4_predict():
     model_path = TMP_DIR / "gnb_model.joblib"
     if not model_path.exists():
         pytest.skip("model artifact missing, step3 failed")
@@ -48,7 +48,7 @@ def test_step4_load_and_predict():
 
 
 @pytest.mark.ml_infra
-def test_step5_accuracy_and_latency():
+def test_step5_performance():
     model = joblib.load(TMP_DIR / "gnb_model.joblib")
     X, y = load_and_gen_feats(as_dense=True)
     X_tr, X_te, y_tr, y_te = X[:800], X[800:], y[:800], y[800:]
