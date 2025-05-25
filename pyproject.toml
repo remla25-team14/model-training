@@ -49,3 +49,5 @@ exclude = [
     "dist",
 ]
 
+[tool.setuptools]
+packages = ["model_training"]
