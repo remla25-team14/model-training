@@ -51,3 +51,6 @@ exclude = [
 
 [tool.setuptools]
 packages = ["model_training"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=model_training --cov-config=.coveragerc"
