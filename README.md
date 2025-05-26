@@ -5,7 +5,7 @@ This repository contains the machine learning model training pipeline for sentim
 ## Project Quality Metrics
 
 Pylint: 
-Coverage: 0%
+Coverage: 75%
 
 ## Setup Instructions
 
