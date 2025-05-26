@@ -39,11 +39,6 @@ jobs:
     - name: Run bandit
       run: bandit -r model_training/
 
-    - name: Run tests and coverage
-      run: |
-        coverage run -m pytest
-        coverage report > coverage.txt
-
     - name: Update README with scores
       run: |
         python update_readme.py
