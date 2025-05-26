@@ -183,9 +183,8 @@ cython_debug/
 .ruff_cache/
 
 # PyPI configuration file
-<<<<<<< HEAD
 .pypirc
 /model_service_artifacts
-=======
-.pypirc
->>>>>>> main
+
+# test coverage file
+.coverage

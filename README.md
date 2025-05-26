@@ -135,6 +135,28 @@ This helps in:
 - DVC credentials are pre-configured and committed in the repository
 - For any issues with data access, ensure you have the correct permissions on DagsHub
 
+## ML Testing
+
+| Category          | Location               | Status         | Notes |
+|-------------------|------------------------|----------------|-------|
+| Feature & Data    | `tests/test_feat_data.py` | Done           |
+| Model Development | `tests/test_model_dev.py` | Done           |
+| ML Infrastructure | `tests/test_ml_infra.py` | Done           |
+| Monitoring        | `tests/test_monitoring.py` | Done           |
+| Metamorphic       | `tests/test_metamorphic.py` | 🚧 placeholder |
+
+### Run the tests
+```bash
+# 1) install dev dependencies
+pip install -e .
+
+# 2) run tests separately (switch between the 5 .py files names)
+pytest tests/test_feat_data.py -q
+
+# 3) run all tests with coverage + ML-Test-Score
+pytest -q
+```
+
 ## Development
 
 To contribute to this repository:

@@ -1,0 +1,10 @@
+[run]
+source = model_training
+omit =
+    */model_training/plots.py
+    */model_training/modeling/evaluate_model.py
+    */model_training/modeling/reference_model_train.py
+
+[report]
+show_missing = True
+fail_under = 0
