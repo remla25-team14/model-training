@@ -3,7 +3,10 @@ from pathlib import Path
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, accuracy_score
+<<<<<<< HEAD
 import json
+=======
+>>>>>>> main
 
 from loguru import logger
 from model_training.config import (
@@ -13,8 +16,12 @@ from model_training.config import (
     TEST_SIZE, 
     RANDOM_STATE,
     BOW_MODEL_FILE,
+<<<<<<< HEAD
     CLASSIFIER_MODEL_FILE,
     REPORTS_DIR
+=======
+    CLASSIFIER_MODEL_FILE
+>>>>>>> main
 )
 from model_training.dataset import load_historic_dataset, download_dataset
 from model_training.features import extract_features
@@ -62,6 +69,7 @@ def evaluate_model(classifier, X_test, y_test):
     logger.info(f"Confusion Matrix:\n{cm}")
     logger.info(f"Accuracy: {acc:.4f}")
     
+<<<<<<< HEAD
     # Save metrics
     metrics = {
         'accuracy': float(acc),
@@ -74,6 +82,8 @@ def evaluate_model(classifier, X_test, y_test):
         json.dump(metrics, f, indent=2)
     logger.info(f"Metrics saved to {metrics_path}")
     
+=======
+>>>>>>> main
     return cm, acc
 
 def run_training_pipeline():
@@ -112,7 +122,11 @@ def run_training_pipeline():
     )
     
     logger.info("Training model...")
+<<<<<<< HEAD
     classifier_path = MODELS_DIR / "model.joblib"
+=======
+    classifier_path = MODELS_DIR / CLASSIFIER_MODEL_FILE
+>>>>>>> main
     classifier = train_model(X_train, y_train, model_path=classifier_path)
     
     logger.info("Evaluating model...")
