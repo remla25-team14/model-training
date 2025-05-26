@@ -12,7 +12,6 @@ from model_training.config import (
     TEST_SIZE,
     RANDOM_STATE,
     BOW_MODEL_FILE,
-    CLASSIFIER_MODEL_FILE,
     REPORTS_DIR
 )
 from model_training.dataset import load_historic_dataset, download_dataset

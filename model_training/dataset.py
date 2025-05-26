@@ -7,7 +7,7 @@ import yaml
 from loguru import logger
 import typer
 
-from model_training.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
+from model_training.config import RAW_DATA_DIR
 
 app = typer.Typer()
 
