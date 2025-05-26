@@ -23,7 +23,7 @@ def load_params():
 
 def download_file(url: str, destination: str):
     """Download a file from url to destination with progress bar."""
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True, timeout=10)
     response.raise_for_status()
 
     total_size = int(response.headers.get("content-length", 0))
