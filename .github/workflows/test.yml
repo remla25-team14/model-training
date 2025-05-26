@@ -7,8 +7,8 @@ on:
 jobs:
   lint-test:
     runs-on: ubuntu-latest
-    permissions: # <--- ADD THIS BLOCK
-      contents: write # <--- Grant write access to repository contents
+    permissions:
+      contents: write # Ensure write access for updating README.md
 
     steps:
     - uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: '3.11'
 
-
+    # (Keeping dummy model_train.py step as requested, even if actual source of error might be elsewhere)
     - name: Create dummy model_train.py to handle unexpected calls
       run: |
         echo "import sys" > model_train.py
@@ -60,24 +60,68 @@ jobs:
         coverage run -m pytest
         coverage report
 
+    # --- Start: Metrics Extraction & Formatting for Badges ---
     - name: Extract coverage summary
       id: coverage
       run: |
-        total=$(coverage report | grep TOTAL)
-        echo "total=$total" >> $GITHUB_OUTPUT
+        # Example output from 'coverage report': "TOTAL 290 72 75%"
+        total_line=$(coverage report | grep TOTAL)
+        percentage_str=$(echo "$total_line" | awk '{print $NF}') # Extracts "75%"
+        percentage_val=${percentage_str%\%} # Converts "75%" to "75" for numeric comparison
+
+        color="red"
+        if (( percentage_val >= 80 )); then
+          color="green"
+        elif (( percentage_val >= 50 )); then
+          color="orange"
+        elif (( percentage_val >= 1 )); then # If it's 0%, maybe keep lightgrey/red
+          color="red"
+        else # for 0%
+          color="lightgrey"
+        fi
+
+        # Output variables for subsequent steps (using GITHUB_OUTPUT as it's the modern way)
+        echo "percentage_formatted=${percentage_str}" >> $GITHUB_OUTPUT
+        echo "color=${color}" >> $GITHUB_OUTPUT
 
     - name: Extract pylint score
       id: pylint
       run: |
-        score=$(grep 'Your code has been rated at' pylint_report.txt | awk '{print $7}')
-        echo "score=$score" >> $GITHUB_OUTPUT
+        # Example output: "Your code has been rated at 9.2/10"
+        score=$(grep 'Your code has been rated at' pylint_report.txt | awk '{print $7}') # Extracts "9.2/10"
+        score_formatted=${score/\//_} # Converts "9.2/10" to "9.2_10" for badge URL compatibility
+
+        pylint_val=$(echo "$score" | cut -d'/' -f1) # Extracts "9.2" for numeric comparison
+        # Use 'bc -l' for floating point comparisons in bash for reliability
+        pylint_color="red"
+        if (( $(echo "$pylint_val >= 9.0" | bc -l) )); then
+          pylint_color="green"
+        elif (( $(echo "$pylint_val >= 7.0" | bc -l) )); then
+          pylint_color="orange"
+        fi
+
+        # Output variables for subsequent steps (using GITHUB_OUTPUT)
+        echo "score_formatted=$score_formatted" >> $GITHUB_OUTPUT
+        echo "color=$pylint_color" >> $GITHUB_OUTPUT
+    # --- End: Metrics Extraction & Formatting for Badges ---
 
     - name: Update README with metrics
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        sed -i "s|^Coverage:.*|Coverage: ${{ steps.coverage.outputs.total }}|g" README.md
-        sed -i "s|^Pylint:.*|Pylint: ${{ steps.pylint.outputs.score }}/10|g" README.md
+
+        # Update Pylint badge in README.md
+        # This regex matches the entire badge URL structure and replaces the dynamic parts.
+        # It accounts for the value (e.g., "9.2/10") potentially containing slashes.
+        # `([^)]+)` captures the entire segment after 'pylint-' up to the next ')', then we split it.
+        # The replacement reconstructs the URL with the new value and color.
+        # Using # as the sed delimiter to avoid conflicts with / in URLs.
+        sed -i -E "s#(https://img.shields.io/badge/pylint-)([^)-]+)-([a-z]+)(\\))#\\1${{ steps.pylint.outputs.score_formatted}}-\\3\\4#g" README.md
+
+        # Update Coverage badge in README.md
+        # Same logic as Pylint badge.
+        sed -i -E "s#(https://img.shields.io/badge/coverage-)([^)-]+)-([a-z]+)(\\))#\\1${{ steps.coverage.outputs.percentage_formatted}}-\\3\\4#g" README.md
+
         git add README.md
         git commit -m "Update coverage and pylint metrics in README" || echo "No changes to commit"
         git push
