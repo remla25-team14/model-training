@@ -18,10 +18,6 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install system build tools and Python dev headers
-      run: |
-        sudo apt update
-        sudo apt install -y python3.11-dev
 
     - name: Create dummy model_train.py to handle unexpected calls
       run: |
