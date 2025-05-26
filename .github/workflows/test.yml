@@ -38,12 +38,3 @@ jobs:
 
     - name: Run bandit
       run: bandit -r model_training/
-
-    - name: Update README with scores
-      run: |
-        python update_badges.py
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add README.md
-        git commit -m "Update README badges [auto]" || echo "No changes"
-        git push
