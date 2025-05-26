@@ -1,29 +1,43 @@
-# Builder stage
-FROM python:3.11-slim as builder
+# Build stage - install build dependencies and train model
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Copy lib-ml source code first and install it
+COPY lib-ml/ /app/lib-ml/
+RUN cd lib-ml && pip install -e .
 
-# Install dependencies without caching
-RUN pip install --no-cache-dir --user -r requirements.txt
+# Install other dependencies
+COPY model-training/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Final stage
-FROM python:3.11-slim
+# Copy source code
+COPY model-training/model_training/ /app/model_training/
+COPY model-training/pyproject.toml .
+
+# Create data directory structure (training code will handle missing data)
+RUN mkdir -p /app/data/raw /app/data/processed /app/data/interim /app/data/external
+
+# Create directories and train model
+RUN mkdir -p models && \
+    python -m model_training.modeling.train
+
+# Runtime stage - minimal image with just the trained models
+FROM python:3.11-slim AS runtime
 
 WORKDIR /app
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+# Install only runtime dependencies
+RUN pip install --no-cache-dir joblib scikit-learn
 
-# Make sure scripts are in PATH
-ENV PATH=/root/.local/bin:$PATH
+# Copy trained models from builder stage
+COPY --from=builder /app/models/ /app/models/
 
-# Copy necessary files
-COPY . .
+# Copy minimal runtime code if needed for serving
+COPY --from=builder /app/model_training/ /app/model_training/
 
-# Create models directory
-RUN mkdir -p models && chmod 777 models
+# Set environment variables
+ENV PYTHONPATH=/app
 
-# Run the model training
-CMD ["python", "model_train.py"] 
+# Default command
+CMD ["ls", "-la", "models/"] 
