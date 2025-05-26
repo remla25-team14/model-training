@@ -5,7 +5,7 @@ from typing import Tuple, Optional
 import numpy as np
 from scipy import sparse
 from loguru import logger
-
+import pandas as pd
 from model_training import config, dataset, features
 from libml.data_preprocessing import preprocess_reviews
 
