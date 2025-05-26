@@ -47,7 +47,7 @@ def main(
     output_path: Path = REPORTS_DIR / "evaluation.json",
 ):
     """Evaluate the trained model."""
-    logger.info("Loading parameters...")
+    logger.info("Loading parameters....")
     params = load_params()
     logger.info(f"Model params: {params}")
 
