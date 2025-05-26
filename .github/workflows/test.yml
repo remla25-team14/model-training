@@ -30,7 +30,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Ensure pytest-cov is installed for integrated coverage
         pip install -r requirements.txt
         pip install pylint flake8 bandit pytest coverage pytest-cov dvc[s3]
 
@@ -45,8 +44,6 @@ jobs:
         dvc pull --force
 
     - name: Run pylint
-      # Pylint command as it was, capturing output for later parsing.
-      # The ambiguous option warning remains an external .pylintrc issue.
       run: pylint model_training/ --rcfile=.pylintrc > pylint_report.txt || true
 
     - name: Run flake8
@@ -56,40 +53,30 @@ jobs:
       run: bandit -r model_training/
 
     - name: Run tests with pytest and coverage
-      # Use pytest-cov for integrated coverage. -q for quiet output.
-      # Redirect output to a file so we can parse the TOTAL coverage in the next step.
       run: |
         pytest -q --cov=model_training --cov-report=term-missing > coverage_report_raw.txt 2>&1
         echo "Raw coverage report saved to coverage_report_raw.txt"
 
-    # --- Start: Metrics Extraction for Plain Text ---
     - name: Extract coverage summary
       id: coverage
       run: |
-        # Parse the raw report file to get the TOTAL percentage (e.g., "75%")
-        # This should now reliably get the correct percentage from pytest-cov's output.
         total_line=$(grep "TOTAL" coverage_report_raw.txt | awk '{print $NF}')
         echo "percentage=${total_line}" >> $GITHUB_OUTPUT
 
     - name: Extract pylint score
       id: pylint
       run: |
-        # This command remains as before, attempting to extract "9.2/10".
-        # If .pylintrc issue prevents this line from being generated, it will remain blank.
         score=$(grep 'Your code has been rated at' pylint_report.txt | awk '{print $7}')
         echo "score=${score}" >> $GITHUB_OUTPUT
-    # --- End: Metrics Extraction for Plain Text ---
 
     - name: Update README with metrics
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-        # Replace existing Pylint line (whether badge or previous plain text)
-        sed -i -E 's|^(!\[Pylint\].*|Pylint:.*)|Pylint: ${{ steps.pylint.outputs.score }}|g' README.md
-
-        # Replace existing Coverage line (whether badge or previous plain text)
-        sed -i -E 's|^(!\[Coverage\].*|Coverage:.*)|Coverage: ${{ steps.coverage.outputs.percentage }}|g' README.md
+        # Corrected sed commands: using '#' as delimiter
+        sed -i -E 's#^(!\[Pylint\].*|Pylint:.*)#Pylint: ${{ steps.pylint.outputs.score }}#g' README.md
+        sed -i -E 's#^(!\[Coverage\].*|Coverage:.*)#Coverage: ${{ steps.coverage.outputs.percentage }}#g' README.md
 
         git add README.md
         git commit -m "Update coverage and pylint metrics in README" || echo "No changes to commit"
