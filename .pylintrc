@@ -6,7 +6,8 @@ init-hook='import sys; sys.path.append("src")'
 disable=missing-docstring,invalid-name,too-few-public-methods
 
 [FORMAT]
-max-line-length=100
+max-line-length=150
+exclude = __init__.py
 
 [REPORTS]
 output-format=text
