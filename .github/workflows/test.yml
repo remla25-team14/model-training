@@ -28,7 +28,7 @@ jobs:
         dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
         dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
         dvc remote modify storage region us-east-1
-        dvc pull
+        dvc pull --force
 
     - name: Run pylint
       run: pylint model_training/ --rcfile=.pylintrc > pylint_report.txt || true
