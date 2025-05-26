@@ -49,6 +49,7 @@ def main(
     """Evaluate the trained model."""
     logger.info("Loading parameters...")
     params = load_params()
+    logger.info(f"Model params: {params}")
 
     logger.info("Loading model...")
     model = joblib.load(model_path)

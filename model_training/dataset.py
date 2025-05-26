@@ -6,6 +6,8 @@ import requests
 import yaml
 from loguru import logger
 import typer
+import os
+from tqdm import tqdm
 
 from model_training.config import RAW_DATA_DIR
 
