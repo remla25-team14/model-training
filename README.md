@@ -4,8 +4,8 @@ This repository contains the machine learning model training pipeline for sentim
 
 ## Project Quality Metrics
 
-![Pylint](https://img.shields.io/badge/pylint--green)
-![Coverage](https://img.shields.io/badge/coverage-0%-lightgrey)
+Pylint: 
+Coverage: 0%
 
 ## Setup Instructions
 
