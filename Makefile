@@ -82,6 +82,7 @@ export PRINT_HELP_PYSCRIPT
 
 help:
 	@$(PYTHON_INTERPRETER) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
+<<<<<<< HEAD
 
 .PHONY: setup clean install-deps install-lib-ml
 
@@ -106,3 +107,5 @@ pipeline:
 	dvc repro
 
 .PHONY: setup clean pipeline
+=======
+>>>>>>> main

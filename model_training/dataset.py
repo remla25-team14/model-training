@@ -1,11 +1,10 @@
 """Dataset handling utilities and download functionality."""
+
 from pathlib import Path
-import os
 import pandas as pd
 import requests
 import yaml
 from loguru import logger
-from tqdm import tqdm
 import typer
 
 from model_training.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
@@ -60,10 +59,10 @@ def download_dataset():
 def load_historic_dataset(file_path=None):
     """
     Load the historic restaurant reviews dataset
-    
+
     Args:
         file_path (Path, optional): Path to the dataset file
-        
+
     Returns:
         pd.DataFrame: The loaded dataset
     """
@@ -83,10 +82,10 @@ def load_historic_dataset(file_path=None):
 def load_fresh_dataset(file_path=None):
     """
     Load the fresh restaurant reviews dataset
-    
+
     Args:
         file_path (Path, optional): Path to the dataset file
-        
+
     Returns:
         pd.DataFrame: The loaded dataset
     """

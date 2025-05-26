@@ -186,4 +186,5 @@ cython_debug/
 .pypirc
 /model_service_artifacts
 
+# test coverage file
 .coverage
