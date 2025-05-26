@@ -2,6 +2,11 @@
 
 This repository contains the machine learning model training pipeline for sentiment analysis of restaurant reviews. The data and models are managed using DVC (Data Version Control) with storage on DagsHub.
 
+## Project Quality Metrics
+
+![Pylint](https://img.shields.io/badge/pylint-9.2/10-green)
+![Coverage](https://img.shields.io/badge/coverage-N/A-lightgrey)
+
 ## Setup Instructions
 
 ### Prerequisites

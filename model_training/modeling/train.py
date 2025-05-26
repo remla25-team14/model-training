@@ -12,8 +12,7 @@ from model_training.config import (
     TEST_SIZE,
     RANDOM_STATE,
     BOW_MODEL_FILE,
-    CLASSIFIER_MODEL_FILE,
-    REPORTS_DIR
+    REPORTS_DIR,
 )
 from model_training.dataset import load_historic_dataset, download_dataset
 from model_training.features import extract_features
@@ -62,19 +61,16 @@ def evaluate_model(classifier, X_test, y_test):
 
     logger.info(f"Confusion Matrix:\n{cm}")
     logger.info(f"Accuracy: {acc:.4f}")
-    
+
     # Save metrics
-    metrics = {
-        'accuracy': float(acc),
-        'confusion_matrix': cm.tolist()
-    }
-    
+    metrics = {"accuracy": float(acc), "confusion_matrix": cm.tolist()}
+
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     metrics_path = REPORTS_DIR / "metrics.json"
-    with open(metrics_path, 'w') as f:
+    with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=2)
     logger.info(f"Metrics saved to {metrics_path}")
-    
+
     return cm, acc
 
 

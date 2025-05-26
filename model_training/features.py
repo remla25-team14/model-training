@@ -1,4 +1,14 @@
+from pathlib import Path
+
+from loguru import logger
+import typer
+import joblib
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+from libml.data_preprocessing import preprocess_reviews
+
 from model_training.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
+
 
 app = typer.Typer()
 
@@ -32,32 +42,32 @@ def extract_features(corpus, max_features=1420, vectorizer_path=None):
 def main(
     input_path: Path = RAW_DATA_DIR / "a1_RestaurantReviews_HistoricDump.tsv",
     output_path: Path = PROCESSED_DATA_DIR / "features.csv",
-    vectorizer_path: Path = PROCESSED_DATA_DIR / "bow_vectorizer.pkl"
+    vectorizer_path: Path = PROCESSED_DATA_DIR / "bow_vectorizer.pkl",
 ):
     logger.info("Generating features from dataset...")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     if not input_path.exists():
         logger.error(f"Input file not found: {input_path}")
         return
-    
+
     logger.info(f"Loading dataset from {input_path}")
     try:
-        df = pd.read_csv(input_path, delimiter='\t', quoting=3)
+        df = pd.read_csv(input_path, delimiter="\t", quoting=3)
     except Exception as e:
         logger.error(f"Failed to load dataset: {e}")
         return
-    
+
     logger.info("Preprocessing text...")
     corpus = preprocess_reviews(df)
-    
+
     logger.info("Extracting features...")
     X, cv = extract_features(corpus, vectorizer_path=vectorizer_path)
-    
+
     logger.info("Creating feature DataFrame...")
     feature_df = pd.DataFrame(X)
-    if 'Liked' in df.columns:
-        feature_df['Liked'] = df['Liked'].values
+    if "Liked" in df.columns:
+        feature_df["Liked"] = df["Liked"].values
 
     logger.info(f"Saving features to {output_path}")
     feature_df.to_csv(output_path, index=False)
@@ -66,4 +76,3 @@ def main(
 
 if __name__ == "__main__":
     app()
-

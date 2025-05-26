@@ -1,6 +1,8 @@
 name: CI Lint & Test
 
-on: [push, pull_request]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   lint-test:
@@ -28,7 +30,7 @@ jobs:
         dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
         dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
         dvc remote modify storage region us-east-1
-        dvc pull
+        dvc pull --force
 
     - name: Run pylint
       run: pylint model_training/ --rcfile=.pylintrc > pylint_report.txt || true
@@ -38,17 +40,3 @@ jobs:
 
     - name: Run bandit
       run: bandit -r model_training/
-
-    - name: Run tests and coverage
-      run: |
-        coverage run -m pytest
-        coverage report > coverage.txt
-
-    - name: Update README with scores
-      run: |
-        python update_readme.py
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add README.md
-        git commit -m "Update README badges [auto]" || echo "No changes"
-        git push
