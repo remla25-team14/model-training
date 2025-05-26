@@ -16,12 +16,6 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install system build tools and Python dev headers
-      run: |
-        sudo apt update # Good practice to refresh package lists
-        sudo apt install -y python3.11-dev # Essential for compiling Python extensions (like Cython ones in sklearn)
-        # build-essential is usually pre-installed on ubuntu-latest, but good to remember its role.
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip # Always good to ensure pip is up-to-date
