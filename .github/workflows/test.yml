@@ -41,7 +41,7 @@ jobs:
 
     - name: Update README with scores
       run: |
-        python update_readme.py
+        python update_badges.py
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add README.md
