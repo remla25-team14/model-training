@@ -75,7 +75,7 @@ jobs:
         git config --local user.name "GitHub Action"
 
         # Corrected sed commands: using '#' as delimiter
-        sed -i -E 's#^(!\[Pylint\].*|Pylint:.*)#Pylint: ${{ steps.pylint.outputs.score }}#g' README.md
+        # sed -i -E 's#^(!\[Pylint\].*|Pylint:.*)#Pylint: ${{ steps.pylint.outputs.score }}#g' README.md
         sed -i -E 's#^(!\[Coverage\].*|Coverage:.*)#Coverage: ${{ steps.coverage.outputs.percentage }}#g' README.md
 
         git add README.md
