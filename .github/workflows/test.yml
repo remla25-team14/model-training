@@ -1,0 +1,43 @@
+name: CI Lint & Test
+
+on: [push, pull_request]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pylint flake8 bandit pytest coverage
+
+    - name: Run pylint
+      run: pylint src/ --rcfile=.pylintrc > pylint_report.txt || true
+
+    - name: Run flake8
+      run: flake8 src/
+
+    - name: Run bandit
+      run: bandit -r src/
+
+    - name: Run tests and coverage
+      run: |
+        coverage run -m pytest
+        coverage report > coverage.txt
+
+    - name: Update README with scores
+      run: |
+        python update_readme.py
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add README.md
+        git commit -m "Update README badges [auto]" || echo "No changes"
+        git push
