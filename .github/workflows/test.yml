@@ -1,0 +1,54 @@
+name: CI Lint & Test
+
+on: [push, pull_request]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pylint flake8 bandit pytest coverage
+
+    - name: Set up DVC and pull data from DagsHub
+      run: |
+        pip install dvc[s3]
+        rm -f .dvc/config*
+        dvc remote add -d storage s3://dvc_cloud_setup
+        dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
+        dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+        dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+        dvc remote modify storage region us-east-1
+        dvc pull
+
+    - name: Run pylint
+      run: pylint model_training/ --rcfile=.pylintrc > pylint_report.txt || true
+
+    - name: Run flake8
+      run: flake8 model_training/
+
+    - name: Run bandit
+      run: bandit -r model_training/
+
+    - name: Run tests and coverage
+      run: |
+        coverage run -m pytest
+        coverage report > coverage.txt
+
+    - name: Update README with scores
+      run: |
+        python update_readme.py
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add README.md
+        git commit -m "Update README badges [auto]" || echo "No changes"
+        git push
