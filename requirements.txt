@@ -1,6 +1,6 @@
 libml @ git+https://github.com/remla25-team14/lib-ml@0.1.6
 scikit-learn==1.0.2
-pandas==1.3.5
+#pandas==1.3.5
 numpy>=1.20.0
 pandas>=1.3.0
 scikit-learn>=1.0.0
