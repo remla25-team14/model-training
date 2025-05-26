@@ -82,3 +82,30 @@ export PRINT_HELP_PYSCRIPT
 
 help:
 	@$(PYTHON_INTERPRETER) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
+<<<<<<< HEAD
+
+.PHONY: setup clean install-deps install-lib-ml
+
+setup: install-deps install-lib-ml
+
+install-deps:
+	pip install -r requirements.txt
+
+install-lib-ml:
+	cd ../lib-ml && pip install -e . && cd ../model-training
+
+clean:
+	rm -rf data/raw/*.tsv
+	rm -rf data/processed/*.csv
+	rm -rf data/processed/*.pkl
+	rm -rf models/*.joblib
+	rm -rf reports/*.json
+	rm -rf model_service_artifacts/*
+
+# Run the full DVC pipeline
+pipeline:
+	dvc repro
+
+.PHONY: setup clean pipeline
+=======
+>>>>>>> main

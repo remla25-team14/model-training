@@ -1,0 +1,23 @@
+training:
+  test_size: 0.2
+  random_state: 42
+  model_params:
+    # Add your model-specific parameters here
+    max_iter: 1000
+    
+data:
+  download:
+    # Raw GitHub URLs for the datasets
+    training_data:
+      url: "https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a1_RestaurantReviews_HistoricDump.tsv"
+    test_data:
+      url: "https://raw.githubusercontent.com/proksch/restaurant-sentiment/main/a2_RestaurantReviews_FreshDump.tsv"
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1 

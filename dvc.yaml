@@ -1,0 +1,56 @@
+stages:
+  download:
+    cmd: python -m model_training.dataset
+    deps:
+      - model_training/dataset.py
+    params:
+      - data.download
+    outs:
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      - data/raw/a2_RestaurantReviews_FreshDump.tsv
+
+  prepare:
+    cmd: python -m model_training.features
+    deps:
+      - model_training/features.py
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      - data/raw/a2_RestaurantReviews_FreshDump.tsv
+    params:
+      - data
+    outs:
+      - data/processed/features.csv
+      - data/processed/bow_vectorizer.pkl
+      
+  train:
+    cmd: python -m model_training.modeling.train
+    deps:
+      - model_training/modeling/train.py
+      - data/processed/features.csv
+      - data/processed/bow_vectorizer.pkl
+    params:
+      - training
+    outs:
+      - models/model.joblib
+    metrics:
+      - reports/metrics.json:
+          cache: false
+      
+  evaluate:
+    cmd: python -m model_training.modeling.evaluate_model
+    deps:
+      - model_training/modeling/evaluate_model.py
+      - models/model.joblib
+      - data/processed/features.csv
+    params:
+      - evaluation
+    metrics:
+      - reports/evaluation.json:
+          cache: false
+          
+  prepare_service:
+    cmd: python prepare_for_model_service.py
+    deps:
+      - prepare_for_model_service.py
+      - models/model.joblib
+    outs:
+      - model_service_artifacts 

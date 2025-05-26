@@ -13,9 +13,7 @@ pytest>=7.0.0
 black>=22.0.0
 python-dotenv>=1.0.0
 requests>=2.28.0
-pylint
-flake8
-bandit
-pytest
-coverage
+dvc>=3.0.0
+dvc-s3>=3.0.0
+dagshub>=0.5.10
 
