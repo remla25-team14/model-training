@@ -1,0 +1,32 @@
+stages:
+  preprocess:
+    cmd: python -m model_training.dataset
+    deps:
+      - model_training/dataset.py
+      - model_training/config.py
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+    outs:
+      - data/processed/dataset.csv
+
+  train:
+    cmd: python -m model_training.modeling.train
+    deps:
+      - model_training/modeling/train.py
+      - model_training/config.py
+      - model_training/dataset.py
+      - model_training/features.py
+      - lib-ml/src/libml/data_preprocessing.py
+      - data/raw/a1_RestaurantReviews_HistoricDump.tsv  
+    outs:
+      - models/bow_vectorizer.pkl
+      - models/sentiment_classifier.pkl
+
+  package:
+    cmd: python prepare_for_model_service.py
+    deps:
+      - prepare_for_model_service.py
+      - models/bow_vectorizer.pkl
+      - models/sentiment_classifier.pkl
+    outs:
+      - model_service_artifacts/c1_BoW_v1.pkl
+      - model_service_artifacts/c2_Classifier_v1.pkl
