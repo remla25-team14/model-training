@@ -52,9 +52,13 @@ jobs:
         dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
         dvc remote modify storage region us-east-1
 
-    - name: Pull DVC data
+    - name: Clean workspace and pull DVC data
       run: |
-        dvc pull -v
+        # Clean any untracked or modified files in model_service_artifacts
+        rm -rf model_service_artifacts/
+        
+        # Force pull all DVC-tracked files
+        dvc pull -v --force
 
     - name: Run DVC pipeline and track experiments
       run: |
