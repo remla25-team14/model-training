@@ -111,7 +111,7 @@ jobs:
         python prepare_for_model_service.py
         
         # Verify model service artifacts
-        if [ ! -f "model_service_artifacts/c1_BoW_Sentiment_Model.pkl" ]; then
+        if [ ! -f "model_service_artifacts/c1_BoW_v1.pkl" ]; then
           echo "❌ Vectorizer artifact not found!"
           exit 1
         fi
@@ -125,7 +125,7 @@ jobs:
       with:
         name: model-artifacts
         path: |
-          model_service_artifacts/c1_BoW_Sentiment_Model.pkl
+          model_service_artifacts/c1_BoW_v1.pkl
           model_service_artifacts/c2_Classifier_v1.pkl
         retention-days: 7
         if-no-files-found: error
