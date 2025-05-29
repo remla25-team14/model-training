@@ -2,6 +2,11 @@ name: Train and Save Model
 
 on:
   push:
+    branches:
+      - main
+      - master
+      - feature/workflow-updates
+      - 'feature/**'
   workflow_dispatch:
 
 jobs:
@@ -10,33 +15,150 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
+        cache: 'pip'
 
-    - name: Install dependencies
+    - name: Get pip cache dir
+      id: pip-cache
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Setup dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-    
-    - name: Verify files
+        pip install dvc[s3]  # Ensure DVC with S3 support is installed
+
+    - name: Configure DVC
       run: |
-        ls -la  # List all files
-        if [ ! -f "model_train.py" ]; then
-          echo "❌ model_train.py not found!"
+        # Remove any existing DVC config to avoid conflicts
+        rm -f .dvc/config*
+        
+        # Configure DVC with team's DagsHub storage credentials
+        dvc remote add -d storage s3://dvc_cloud_setup
+        dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
+        dvc remote modify storage access_key_id 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+        dvc remote modify storage secret_access_key 04dc266bcc211e1d07d5fdfa4f9c999979cf7bb3
+        dvc remote modify storage region us-east-1
+
+    - name: Clean workspace and pull DVC data
+      run: |
+        # Clean any untracked or modified files in model_service_artifacts
+        rm -rf model_service_artifacts/
+        
+        # Force pull all DVC-tracked files
+        dvc pull -v --force
+
+    - name: Run DVC pipeline and track experiments
+      run: |
+        # Show current experiment state
+        dvc exp show
+        
+        # Run the pipeline
+        dvc repro -v
+        
+        # Show updated experiment metrics
+        echo "Updated Experiment Metrics:"
+        dvc exp show --no-pager
+        
+        # Verify pipeline outputs
+        if [ ! -f "data/processed/features.csv" ]; then
+          echo "❌ Processed features not found!"
+          exit 1
+        fi
+        if [ ! -f "data/processed/bow_vectorizer.pkl" ]; then
+          echo "❌ Vectorizer not found!"
+          exit 1
+        fi
+        if [ ! -f "models/model.joblib" ]; then
+          echo "❌ Model file not found!"
+          exit 1
+        fi
+        if [ ! -f "reports/metrics.json" ]; then
+          echo "❌ Metrics file not found!"
+          exit 1
+        fi
+        if [ ! -f "reports/evaluation.json" ]; then
+          echo "❌ Evaluation file not found!"
+          exit 1
+        fi
+        
+        # Display training metrics
+        echo "Training Metrics:"
+        cat reports/metrics.json
+        echo "Evaluation Results:"
+        cat reports/evaluation.json
+
+    - name: Push DVC changes
+      run: |
+        dvc push -v
+
+    - name: Prepare model artifacts for model-service
+      run: |
+        python prepare_for_model_service.py
+        
+        # Verify model service artifacts
+        if [ ! -f "model_service_artifacts/c1_BoW_v1.pkl" ]; then
+          echo "❌ Vectorizer artifact not found!"
+          exit 1
+        fi
+        if [ ! -f "model_service_artifacts/c2_Classifier_v1.pkl" ]; then
+          echo "❌ Classifier artifact not found!"
           exit 1
         fi
 
-    - name: Create models directory
-      run: mkdir -p models
-
-    - name: Train model
-      run: python model_train.py
-
-    - name: Upload models as artifact
+    - name: Upload model artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ml-models
-        path: models/
+        name: model-artifacts
+        path: |
+          model_service_artifacts/c1_BoW_v1.pkl
+          model_service_artifacts/c2_Classifier_v1.pkl
+        retention-days: 7
+        if-no-files-found: error
+
+    - name: Upload metrics and experiment results
+      uses: actions/upload-artifact@v4
+      with:
+        name: metrics
+        path: |
+          reports/metrics.json
+          reports/evaluation.json
+        retention-days: 7
+
+    - name: Get artifact ID
+      run: |
+        # Wait a bit for the artifact to be processed
+        sleep 10
+        
+        # Get the artifact ID using GitHub API
+        ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts" | \
+          jq -r '.artifacts[0].id')
+        
+        echo "Latest artifact ID: $ARTIFACT_ID"
+        echo "ARTIFACT_ID=$ARTIFACT_ID" >> "$GITHUB_ENV"
+
+    - name: Create artifact ID file
+      run: |
+        echo "$ARTIFACT_ID" > latest_artifact_id.txt
+
+    - name: Upload artifact ID
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact-id
+        path: latest_artifact_id.txt
         retention-days: 7

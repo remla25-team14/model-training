@@ -7,6 +7,8 @@ on:
 jobs:
   lint-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Ensure write access for updating README.md
 
     steps:
     - uses: actions/checkout@v3
@@ -14,16 +16,25 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
+
+    # (Keeping dummy model_train.py step as requested)
+    - name: Create dummy model_train.py to handle unexpected calls
+      run: |
+        echo "import sys" > model_train.py
+        echo "print('WARNING: Dummy model_train.py was executed. This indicates a hardcoded path issue.')" >> model_train.py
+        echo "print(f'Arguments passed: {sys.argv[1:]}')" >> model_train.py
+        echo "sys.exit(0)" >> model_train.py
+        echo "Dummy model_train.py created in repository root."
 
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pylint flake8 bandit pytest coverage
+        pip install pylint flake8 bandit pytest coverage pytest-cov dvc[s3]
 
     - name: Set up DVC and pull data from DagsHub
       run: |
-        pip install dvc[s3]
         rm -f .dvc/config*
         dvc remote add -d storage s3://dvc_cloud_setup
         dvc remote modify storage endpointurl https://dagshub.com/api/v1/repo-buckets/s3/s.hakimi
@@ -40,3 +51,35 @@ jobs:
 
     - name: Run bandit
       run: bandit -r model_training/
+
+    - name: Run tests with pytest and coverage
+      run: |
+        pytest -q --cov=model_training --cov-report=term-missing > coverage_report_raw.txt 2>&1
+        echo "Raw coverage report saved to coverage_report_raw.txt"
+
+    - name: Extract coverage summary
+      id: coverage
+      run: |
+        total_line=$(grep "TOTAL" coverage_report_raw.txt | awk '{print $NF}')
+        echo "percentage=${total_line}" >> $GITHUB_OUTPUT
+
+    - name: Extract pylint score
+      id: pylint
+      run: |
+        score=$(grep 'Your code has been rated at' pylint_report.txt | awk '{print $7}')
+        echo "score=${score}" >> $GITHUB_OUTPUT
+
+    - name: Update README with metrics
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        # Corrected sed commands: using '#' as delimiter
+        # sed -i -E 's#^(!\[Pylint\].*|Pylint:.*)#Pylint: ${{ steps.pylint.outputs.score }}#g' README.md
+        sed -i -E 's#^(!\[Coverage\].*|Coverage:.*)#Coverage: ${{ steps.coverage.outputs.percentage }}#g' README.md
+
+        git add README.md
+        git commit -m "Update coverage and pylint metrics in README" || echo "No changes to commit"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
