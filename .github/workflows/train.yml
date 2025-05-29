@@ -36,11 +36,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Setup dependencies using Make
+    - name: Setup dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y make
-        make setup
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install dvc[s3]  # Ensure DVC with S3 support is installed
 
     - name: Configure DVC
       run: |
