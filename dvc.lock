@@ -5,8 +5,8 @@ stages:
     deps:
     - path: model_training/dataset.py
       hash: md5
-      md5: 4b1b1fdc22ae263b931ea8afe792c391
-      size: 3626
+      md5: d398185e0dc397883004b88c23aaf376
+      size: 3566
     params:
       params.yaml:
         data.download:
@@ -38,8 +38,8 @@ stages:
       size: 6504
     - path: model_training/features.py
       hash: md5
-      md5: 23d41109e058ae3b47a8a6d280cb4ffa
-      size: 2448
+      md5: e6d67fd89176724112296cc261eb2844
+      size: 2368
     params:
       params.yaml:
         data:
@@ -55,8 +55,8 @@ stages:
     outs:
     - path: data/processed/bow_vectorizer.pkl
       hash: md5
-      md5: 571c8e2c8df0e90bc9a42617c703fe69
-      size: 39448
+      md5: 55538a8a69f05fd46eb394e38bf71a06
+      size: 39451
     - path: data/processed/features.csv
       hash: md5
       md5: 34c08e2c530411c728c5eb0038e18ab3
@@ -66,16 +66,16 @@ stages:
     deps:
     - path: data/processed/bow_vectorizer.pkl
       hash: md5
-      md5: 571c8e2c8df0e90bc9a42617c703fe69
-      size: 39448
+      md5: 55538a8a69f05fd46eb394e38bf71a06
+      size: 39451
     - path: data/processed/features.csv
       hash: md5
       md5: 34c08e2c530411c728c5eb0038e18ab3
       size: 2563796
     - path: model_training/modeling/train.py
       hash: md5
-      md5: 90048d13c78eecee59c1f6e25bf1afed
-      size: 3743
+      md5: 50b01134d15462367164ff87fa4bfaf9
+      size: 3590
     params:
       params.yaml:
         training:
@@ -86,7 +86,7 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 03138659cb8fe377321cfe7e363f7cc1
+      md5: 63cbc76be8c44e19f77c973f77ffc547
       size: 46215
     - path: reports/metrics.json
       hash: md5
@@ -101,11 +101,11 @@ stages:
       size: 2563796
     - path: model_training/modeling/evaluate_model.py
       hash: md5
-      md5: 2ce5bc14893cf8c34632cbff70dfdeda
-      size: 2326
+      md5: 3e1207f7b2656fb6f4382ffea05500c9
+      size: 2311
     - path: models/model.joblib
       hash: md5
-      md5: 03138659cb8fe377321cfe7e363f7cc1
+      md5: 63cbc76be8c44e19f77c973f77ffc547
       size: 46215
     params:
       params.yaml:
@@ -125,15 +125,15 @@ stages:
     deps:
     - path: models/model.joblib
       hash: md5
-      md5: 03138659cb8fe377321cfe7e363f7cc1
+      md5: 63cbc76be8c44e19f77c973f77ffc547
       size: 46215
     - path: prepare_for_model_service.py
       hash: md5
-      md5: 8dceb817b8f9bad778a1961bb61bcb19
-      size: 1707
+      md5: 15aab137d339f65d2b0a17d1a3b06a9c
+      size: 1720
     outs:
     - path: model_service_artifacts
       hash: md5
-      md5: 005ddbb9951d44419397770a4feca33e.dir
-      size: 85663
+      md5: 58c060c4af07351b446967c33c6683a0.dir
+      size: 85666
       nfiles: 2

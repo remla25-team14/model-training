@@ -29,7 +29,7 @@ def prepare_models_for_service():
     output_dir.mkdir(exist_ok=True)
     
     # Destination paths expected by model-service
-    bow_dst = output_dir / "c1_BoW_v1.pkl"
+    bow_dst = output_dir / "c1_BoW_Sentiment_Model.pkl"
     clf_dst = output_dir / "c2_Classifier_v1.pkl"
     
     # Copy and rename files
