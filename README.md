@@ -101,30 +101,47 @@ If no files have changed, `dvc repro` will indicate that the pipeline is up to d
 
 ### Versioned Model Releases (GitHub Releases)
 
-This repository supports versioned model releases using GitHub Releases. When you push a version tag (e.g., `v1.0.3`), the CI workflow will:
+This repository supports versioned model releases using GitHub Releases. The process involves two steps:
 
-1. Run the full DVC pipeline to train the model and prepare artifacts
-2. Create a new GitHub Release with the tag (e.g., `v1.0.3`)
-3. Attach the model artifacts as release assets:
+#### Step 1: Prepare the Version
+First, manually update the version in `version.txt`:
+```bash
+# Edit version.txt to the desired version (e.g., 0.1.3)
+echo "0.1.3" > version.txt
+git add version.txt
+git commit -m "Bump version to 0.1.3"
+git push origin your-branch
+```
+
+#### Step 2: Create the Release
+When you push a version tag that matches the version in `version.txt`, the CI workflow will:
+
+1. **Run the full DVC pipeline** to train the model and prepare artifacts
+2. **Create a new GitHub Release** with the tag (e.g., `v0.1.3`)
+3. **Attach the model artifacts** as release assets:
    - `model_service_artifacts/c1_BoW_Sentiment_Model.pkl`
    - `model_service_artifacts/c2_Classifier_v1.pkl`
-4. Bump the version in `version.txt` for the next release
+4. **Automatically bump the version** in `version.txt` for the next release
 
 #### How to trigger a release
 
 ```bash
-# Make sure your branch is up to date and all changes are committed
-# Create a new version tag (e.g., v1.0.3)
-git tag v1.0.3
-git push origin v1.0.3
+# 1. Make sure your branch is up to date and version.txt is committed
+git push origin your-branch
+
+# 2. Create a version tag that matches version.txt
+# If version.txt contains "0.1.3", create tag "v0.1.3"
+git tag v0.1.3
+git push origin v0.1.3
 ```
 
-This will trigger the workflow and create a new release. You can find the released model files in the [GitHub Releases](../../releases) section of the repository.
+This will trigger the `train.yml` workflow and create a new release. You can find the released model files in the [GitHub Releases](../../releases) section of the repository.
 
-#### Notes
-- The workflow will also run on branch pushes for CI/testing, but only tag pushes create a GitHub Release.
-- The version is tracked in `version.txt` and automatically incremented after each release.
-- You can always download the latest released model from the Releases page for deployment or inference.
+#### Important Notes
+- The tag must match the version in `version.txt` (e.g., if version.txt has `0.1.3`, use tag `v0.1.3`)
+- The workflow will also run on branch pushes for CI/testing, but only tag pushes create a GitHub Release
+- The version in `version.txt` is automatically incremented after each release
+- You can always download the latest released model from the Releases page for deployment or inference
 
 ### Experiment Management
 DVC provides powerful experiment tracking capabilities. Here's how to use them:
