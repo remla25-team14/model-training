@@ -7,7 +7,13 @@ on:
       - master
       - feature/workflow-updates
       - 'feature/**'
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   train-model:
@@ -111,7 +117,7 @@ jobs:
         python prepare_for_model_service.py
         
         # Verify model service artifacts
-        if [ ! -f "model_service_artifacts/c1_BoW_v1.pkl" ]; then
+        if [ ! -f "model_service_artifacts/c1_BoW_Sentiment_Model.pkl" ]; then
           echo "❌ Vectorizer artifact not found!"
           exit 1
         fi
@@ -125,7 +131,7 @@ jobs:
       with:
         name: model-artifacts
         path: |
-          model_service_artifacts/c1_BoW_v1.pkl
+          model_service_artifacts/c1_BoW_Sentiment_Model.pkl
           model_service_artifacts/c2_Classifier_v1.pkl
         retention-days: 7
         if-no-files-found: error
@@ -162,3 +168,40 @@ jobs:
         name: artifact-id
         path: latest_artifact_id.txt
         retention-days: 7
+
+    - name: Extract version for release
+      run: |
+        # Use the current version from version.txt
+        CURRENT_VERSION=$(cat version.txt)
+        echo "version=$CURRENT_VERSION" >> $GITHUB_ENV
+        echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ env.version }}
+        name: "Model Release v${{ env.version }}"
+        body: "Automated model release from CI pipeline"
+        files: |
+          model_service_artifacts/c1_BoW_Sentiment_Model.pkl
+          model_service_artifacts/c2_Classifier_v1.pkl
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Bump version for next release
+      run: |
+        CURRENT_VERSION=$(cat version.txt)
+        MAJOR=$(echo "$CURRENT_VERSION" | cut -d . -f 1)
+        MINOR=$(echo "$CURRENT_VERSION" | cut -d . -f 2)
+        PATCH=$(echo "$CURRENT_VERSION" | cut -d . -f 3)
+        NEXT_PATCH=$((PATCH + 1))
+        NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}"
+        echo "$NEXT_VERSION" > version.txt
+
+    - name: Commit and push version bump
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add version.txt
+        git commit -m "Bump version to $(cat version.txt) after release" || echo "Nothing to commit"
+        git push origin ${{ github.ref_name }}
