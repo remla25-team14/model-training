@@ -184,6 +184,50 @@ This helps in:
 - DVC credentials are pre-configured and committed in the repository
 - For any issues with data access, ensure you have the correct permissions on DagsHub
 
+## Rolling Back to a Previous Pipeline Version
+
+If you need to restore your code, parameters, and DVC-tracked data/models to a previous state (for example, to reproduce an old experiment or recover from a bad change), follow these steps:
+
+1. **Find the Commit or Tag You Want to Roll Back To**
+   ```bash
+   git log --oneline
+   # or, to see tags:
+   git tag
+   ```
+
+2. **Checkout the Desired Commit or Tag**
+   ```bash
+   # Replace <commit-hash> or <tag> with your target
+   git checkout <commit-hash>
+   # or
+   git checkout <tag>
+   ```
+
+3. **Restore DVC-Trained Artifacts for That Version**
+   ```bash
+   dvc checkout
+   ```
+
+   > This will update your workspace to match the exact data, models, and artifacts tracked at that commit.
+
+4. **(Optional) Fetch Data/Models from Remote Storage**
+   If you don’t have the required files locally, pull them from remote:
+   ```bash
+   dvc pull
+   ```
+
+5. **(Optional) Return to the Latest Version**
+   To go back to your latest branch:
+   ```bash
+   git checkout <your-branch>
+   dvc checkout
+   ```
+
+**Notes:**
+- This process restores both code and all DVC-tracked files (data, models, metrics, etc.) to the exact state of the chosen commit.
+- You can use this to reproduce any past experiment or recover from mistakes.
+- If you use DVC experiments (`dvc exp`), you can also roll back/apply experiments with `dvc exp apply <exp-name>`.
+
 ## ML Testing
 
 | Category          | Location               | Status         | Notes |
